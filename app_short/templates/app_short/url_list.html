@@ -1,0 +1,26 @@
+{% extends 'app_short/base.html' %} 
+{% load static %}
+{% block body %}
+<div class="container">
+  {% if request.user.is_authenticated %}
+    <table id="customers">
+        <tr>
+          <th>Long URL</th>
+          <th>Short Url</th>
+          <th>Status</th>
+        </tr>
+        {% for url in urls %}
+            <tr>
+                <td>{{ url.long_url }}</td>
+                <td><a href="{{ act }}{{ url.short_url }}" style="color: black;" target="_blank" >{{ act }}{{ url.short_url }}</a></td>
+                <td>{{ url.status }}</td>
+            </tr>
+        {% endfor %}
+      </table>
+    {% else %}
+      <h1> You Must Login First To See URL List</h1>
+    {% endif %}
+
+</div>
+
+{% endblock body %}

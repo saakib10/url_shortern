@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block body %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card">
+                <h2 class="card-title text-center">Register</h2>
+                <div class="card-body py-md-4">
+                    <form class="text-center" method="post" id="formRegister">
+                        {% csrf_token %}
+                        <div class="form-group">
+                                {{ form.username }} </div><br>
+                        <div class="form-group">
+                                {{ form.email }} </div><br>
+                        <div class="form-group">
+                                {{ form.password1 }} </div><br>
+                        <div class="form-group">
+                                {{ form.password2 }} </div><br>
+                        <div class="d-flex flex-row align-items-center justify-content-between">
+                            <a href="{% url 'login' %}">Login</a>
+                            <button class="btn btn-success">Register</button>
+                        </div>
+                        {{form.errors}}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var form_fields = document.getElementsByTagName('input')
+    form_fields[1].placeholder='Username';
+    form_fields[2].placeholder='@example.com..';
+    form_fields[3].placeholder='Password';
+    form_fields[4].placeholder='Retype Password';
+
+
+    for (var field in form_fields){
+        form_fields[field].className += ' form-control'
+    }
+</script>
+{% endblock body %}
