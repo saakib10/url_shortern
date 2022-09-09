@@ -1,6 +1,6 @@
 from datetime import datetime
 from .serializer import UrltSerializer
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render
 
 from django.http import HttpResponse, HttpResponseRedirect,Http404,HttpResponseForbidden
 from rest_framework.views import APIView
@@ -10,6 +10,16 @@ from django.utils import timezone
 from rest_framework.response import Response
 import requests
 
+class ApiForUrlList(APIView):
+    
+    def get(self,request,):
+        data = Shortener.objects.all()
+        serialize = UrltSerializer(data, many= True)
+
+        return Response(serialize.data)
+    
+    def post(self):
+        pass
 
 def home_view(request):
     template = 'app_short/home.html'
@@ -28,13 +38,9 @@ def home_view(request):
         used_form = ShortenerForm(request.POST)
 
         if used_form.is_valid():
-            
             shortened_object = used_form.save()
-
             new_url = request.build_absolute_uri('/') + shortened_object.short_url
-            
-            long_url = shortened_object.long_url 
-             
+            long_url = shortened_object.long_url
             context['new_url']  = new_url
             context['long_url'] = long_url
              
@@ -56,35 +62,14 @@ def redirect_url_view(request, shortened_part):
         else:
             raise Http404('Sorry this link is Expires :(')
     else:
-        # raise Http404("You Must login First")
-
         return HttpResponseForbidden('NOT AUTHENTICATED')
-    
-# def load_url_list(request):
-#     context = {}
-    
-#     urls = Shortener.objects.all()
-#     context["urls"] = urls
-    
-#     update_url_status(urls)
-    
-#     return render(request,"url_list.html",context)
 
-class ApiForUrlList(APIView):
-    
-    def get(self,request,):
-        data = Shortener.objects.all()
-        serialize = UrltSerializer(data, many= True)
-
-        return Response(serialize.data)
-    
-    def post(self):
-        pass
-    
+#URL List API Data Process
 def render_api_data(request):
     urls = requests.get(f"{request.build_absolute_uri('/')}url_api/").json()
     context = {"urls" : urls, "act" : request.build_absolute_uri('/')}
     return render(request,"url_list.html",context)
+
 
 def update_url_status(urls):
     for url in urls:
