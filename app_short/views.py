@@ -68,6 +68,8 @@ def redirect_url_view(request, shortened_part):
 def render_api_data(request):
     urls = requests.get(f"{request.build_absolute_uri('/')}url_api/").json()
     context = {"urls" : urls, "act" : request.build_absolute_uri('/')}
+    update = Shortener.objects.all().filter(status = "enable")
+    update_url_status(update)
     return render(request,"url_list.html",context)
 
 
