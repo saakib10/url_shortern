@@ -26,9 +26,7 @@ def home_view(request):
 
     context = {}
     context['form'] = ShortenerForm()
-    
-    urls = Shortener.objects.all().filter(status = "enable")
-    update_url_status(urls)
+    update_url_status()
 
     if request.method == 'GET':
         return render(request, template, context)
@@ -52,11 +50,10 @@ def home_view(request):
 
 def redirect_url_view(request, shortened_part):
     if request.user.is_authenticated:
-        
+        update_url_status()
         shortener = Shortener.objects.get(short_url=shortened_part)
         shortener.times_followed += 1   
         shortener.save()
-        
         if shortener.status == "enable": 
             return HttpResponseRedirect(shortener.long_url)
         else:
@@ -68,12 +65,12 @@ def redirect_url_view(request, shortened_part):
 def render_api_data(request):
     urls = requests.get(f"{request.build_absolute_uri('/')}url_api/").json()
     context = {"urls" : urls, "act" : request.build_absolute_uri('/')}
-    update = Shortener.objects.all().filter(status = "enable")
-    update_url_status(update)
+    update_url_status()
     return render(request,"url_list.html",context)
 
 
-def update_url_status(urls):
+def update_url_status():
+    urls = Shortener.objects.all().filter(status = "enable")
     for url in urls:
         shortener = Shortener.objects.get(short_url = url.short_url)
         now = timezone.now()
